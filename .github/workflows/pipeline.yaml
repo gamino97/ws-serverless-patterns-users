@@ -37,6 +37,8 @@ jobs:
   test:
     if: github.event_name == 'push'
     runs-on: ubuntu-latest
+    env:
+      AWS_DEFAULT_REGION: ${{ env.TESTING_REGION }}
     steps:
       - uses: actions/checkout@v3
       - run: |
