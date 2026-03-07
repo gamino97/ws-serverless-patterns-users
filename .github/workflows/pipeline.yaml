@@ -29,6 +29,7 @@ env:
   # prod "sam package" and "sam deploy" commands.
   # PROD_IMAGE_REPOSITORY = '0123456789.dkr.ecr.region.amazonaws.com/repository-name'
   PROD_REGION: us-east-1
+  AWS_DEFAULT_REGION: us-east-1
 
 permissions:
   id-token: write
@@ -37,13 +38,11 @@ jobs:
   test:
     if: github.event_name == 'push'
     runs-on: ubuntu-latest
-    with:
-      AWS_DEFAULT_REGION: ${{ env.TESTING_REGION }}
     steps:
       - uses: actions/checkout@v3
       - run: |
           # trigger the tests here
-          echo 'Running unit tests'
+          echo 'Running unit tests in $AWS_DEFAULT_REGION'
           # Install all dependencies (including dependencies for running tests)
           pip3 install -r requirements.txt
           pip3 install -r ./tests/requirements.txt
