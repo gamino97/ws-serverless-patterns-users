@@ -1,7 +1,10 @@
+# Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+# SPDX-License-Identifier: MIT-0
+
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: >
-  SAM Template for Serverless Patterns v9 - CICD CodeDeploy first application
+  SAM Template for Serverless Patterns v8 - Observability - Dashboard
 
 Globals:
   Function:
@@ -34,10 +37,6 @@ Resources:
     Properties:
       Handler: src/api/users.lambda_handler
       Description: Handler for all users related operations
-      AutoPublishAlias: live
-      DeploymentPreference:
-        Enabled: true
-        Type: AllAtOnce
       Environment:
         Variables:
           USERS_TABLE: !Ref UsersTable
@@ -47,12 +46,6 @@ Resources:
       Tags:
         Stack: !Sub "${AWS::StackName}"
       Events:
-        GetusersCountEvent:
-          Type: Api
-          Properties:
-            Path: /users/count
-            Method: get
-            RestApiId: !Ref RestAPI
         GetUsersEvent:
           Type: Api
           Properties:
@@ -63,7 +56,7 @@ Resources:
           Type: Api
           Properties:
             Path: /users
-            Method: put
+            Method: post
             RestApiId: !Ref RestAPI
         UpdateUserEvent:
           Type: Api
@@ -402,11 +395,11 @@ Outputs:
 
   CognitoLoginURL:
     Description: Cognito User Pool Application Client Hosted Login UI URL
-    Value: !Sub 'https://${UserPoolClient}.auth.${AWS::Region}.amazoncognito.com/login?client_id=${UserPoolClient}&response_type=code&redirect_uri=http://localhost'
+    Value: !Sub "https://${UserPoolClient}.auth.${AWS::Region}.amazoncognito.com/login?client_id=${UserPoolClient}&response_type=code&redirect_uri=http://localhost"
 
   CognitoAuthCommand:
     Description: AWS CLI command for Amazon Cognito User Pool authentication
-    Value: !Sub 'aws cognito-idp initiate-auth --auth-flow USER_PASSWORD_AUTH --client-id ${UserPoolClient} --auth-parameters USERNAME=<username>,PASSWORD=<password>'
+    Value: !Sub "aws cognito-idp initiate-auth --auth-flow USER_PASSWORD_AUTH --client-id ${UserPoolClient} --auth-parameters USERNAME=<username>,PASSWORD=<password> --query 'AuthenticationResult.IdToken' --output text"
 
   AlarmsTopic:
     Description: "SNS Topic to be used for the alarms subscriptions"
